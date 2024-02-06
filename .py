@@ -1,4 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 # # HHA 550 Session 2 Homework Assignment
+
+# ## DATA
 
 # ## Diabetes Dataset Cleaning
 
@@ -108,7 +113,7 @@
 
 # ## Install Libraries
 
-# In[429]:
+# In[949]:
 
 
 # Commands to install some of the libraries in-case if they are not installed
@@ -130,7 +135,7 @@ get_ipython().system('pip install --upgrade scikit-learn')
 
 # ## Import Packages
 
-# In[430]:
+# In[2]:
 
 
 import pandas as pd   # data processing, CSV file I/O (e.g. pd.read_csv)
@@ -167,7 +172,7 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, train_test_split
 
 
-# In[431]:
+# In[3]:
 
 
 from sklearn.model_selection import KFold,cross_val_score, RepeatedStratifiedKFold,StratifiedKFold
@@ -203,9 +208,11 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
+# ## Exploratory Data Analysis (EDA)
+
 # ## Loading in the diabetes dataset
 
-# In[432]:
+# In[4]:
 
 
 # Loading in the diabetes dataset
@@ -214,7 +221,7 @@ df = pd.read_csv('https://raw.githubusercontent.com/Alyssasorensen/Diabetes_data
 df
 
 
-# In[435]:
+# In[5]:
 
 
 # Showing only the head data points on the dataset
@@ -244,7 +251,7 @@ df.head()
 # ## Insights into our target variable 
 # * One of the first steps of exploratory data analysis should always be to look at what the values of y look like. 
 
-# In[436]:
+# In[6]:
 
 
 # Calculate the percentage of each category in the 'readmitted' column
@@ -266,7 +273,7 @@ print(f"Percentage of patients readmitted after >30 days: % {round(readmitted_pe
 
 # ## Visualize readmittance
 
-# In[440]:
+# In[7]:
 
 
 # Assuming 'readmitted' is a column in your DataFrame (df)
@@ -276,7 +283,7 @@ fig = px.histogram(df, x="readmitted", title='Readmitted with Diabetes', width=4
 fig.show()
 
 
-# In[339]:
+# In[8]:
 
 
 # Assuming 'readmitted_percentage' is calculated
@@ -303,7 +310,7 @@ fig.show()
 # 
 # * In our example: Patients who did not readmit is majority class.
 
-# In[340]:
+# In[9]:
 
 
 df.info()
@@ -311,7 +318,7 @@ df.info()
 
 # ## Check for Missing Data / Missing Values
 
-# In[341]:
+# In[10]:
 
 
 # This is if we replace all "?" vaues with a 0
@@ -324,7 +331,7 @@ df[columns_to_replace] = df[columns_to_replace].replace('?', 0)
 df
 
 
-# In[342]:
+# In[11]:
 
 
 # Turning race categorical values into numerical values 
@@ -332,7 +339,7 @@ df
 # "0" is already defined as a missing value since executing the code from above, so we start off "1"  
 
 # Define the mapping for the 'race' column
-race_mapping = {'Caucasian': 1, 'AfricanAmerican': 2, 'Hispanic': 3}
+race_mapping = {'Caucasian': 1, 'AfricanAmerican': 2, 'Hispanic': 3, 'Other': 4}
 
 # Map the 'race' column using the defined mapping
 df['race'] = df['race'].map(race_mapping)
@@ -340,7 +347,7 @@ df['race'] = df['race'].map(race_mapping)
 df
 
 
-# In[343]:
+# In[12]:
 
 
 # Turning gender categorical values into numerical values 
@@ -354,7 +361,7 @@ df = df.replace({"gender": gender_mapping})
 df
 
 
-# In[344]:
+# In[13]:
 
 
 # Turning age categorical values into numerical values 
@@ -368,7 +375,7 @@ df = df.replace({"age": age_mapping})
 df
 
 
-# In[345]:
+# In[14]:
 
 
 # Turning payer_code categorical values into numerical values 
@@ -376,13 +383,13 @@ df
 # "0" is already defined as a missing value since executing the code from above, so we start off "1"  
 
 # Define the mapping for the 'payer_code' column
-payer_code_mapping = {'MC': 1, 'MD': 2, 'SP': 3, 'CP': 4, 'UN': 5, 'HM': 6, 'BC': 7, 'SI': 8, 'DM': 9, 'CM': 10, 'PO': 11, 'WC': 12, 'OG': 13}
+payer_code_mapping = {'MC': 1, 'MD': 2, 'SP': 3, 'CP': 4, 'UN': 5, 'HM': 6, 'BC': 7, 'SI': 8, 'DM': 9, 'CM': 10, 'PO': 11, 'WC': 12, 'OG': 13, 'CH': 14, 'OT': 15, 'MP': 16, 'FR': 17}
 
 df = df.replace({"payer_code": payer_code_mapping})
 df
 
 
-# In[346]:
+# In[15]:
 
 
 # NEED TO ADD MORE SPECIALTIES POSSIBLY
@@ -393,13 +400,13 @@ df
 
 # Define the mapping for the 'medical_specialty' column
 
-medical_specialty_mapping = {'Pediatrics-Endocrinology': 1, 'InternalMedicine': 2, 'Family/GeneralPractice': 3, 'Cardiology': 4, 'Surgery-General': 5, 'Orthopedics': 6, 'Gastroenterology': 7, 'Nephrology': 8, 'Orthopedics-Reconstructive': 9, 'Surgery-Cardiovascular/Thoracic': 10, 'Psychiatry': 11, 'Emergency/Trauma': 12, 'Pulmonology': 13, 'Surgery-Neuro': 14, 'Obstetrics&Gynecology-GynecologicOnco': 15, 'Pediatrics': 16, 'ObstetricsandGynecology': 17, 'Hematology/Oncology': 18, 'Pediatrics-Endocrinology': 19, 'Otolaryngology': 20, 'Surgery-Colon&Rectal': 21, 'Urology': 22, 'Psychiatry-Child/Adolescent': 23, 'Gynecology': 24, 'Radiologist': 25, 'Surgery-Vascular': 26, 'PhysicalMedicineandRehabilitation': 27, 'Rheumatology': 28, 'Podiatry': 29, 'Hematology': 30, 'Osteopath': 31, 'Hospitalist': 32, 'Psychology': 33, 'InfectiousDiseases': 34, 'SportsMedicine': 35, 'Speech': 36, 'Perinatology': 37, 'Neurophysiology': 38, 'Pediatrics-InfectiousDiseases':39}
+medical_specialty_mapping = {'Pediatrics-Endocrinology': 1, 'InternalMedicine': 2, 'Family/GeneralPractice': 3, 'Cardiology': 4, 'Surgery-General': 5, 'Orthopedics': 6, 'Gastroenterology': 7, 'Nephrology': 8, 'Orthopedics-Reconstructive': 9, 'Surgery-Cardiovascular/Thoracic': 10, 'Psychiatry': 11, 'Emergency/Trauma': 12, 'Pulmonology': 13, 'Surgery-Neuro': 14, 'Obsterics&Gynecology-GynecologicOnco': 15, 'Pediatrics': 16, 'ObstetricsandGynecology': 17, 'Hematology/Oncology': 18, 'Pediatrics-Endocrinology': 19, 'Otolaryngology': 20, 'Surgery-Colon&Rectal': 21, 'Urology': 22, 'Psychiatry-Child/Adolescent': 23, 'Gynecology': 24, 'Radiologist': 25, 'Surgery-Vascular': 26, 'PhysicalMedicineandRehabilitation': 27, 'Rheumatology': 28, 'Podiatry': 29, 'Hematology': 30, 'Osteopath': 31, 'Hospitalist': 32, 'Psychology': 33, 'InfectiousDiseases': 34, 'SportsMedicine': 35, 'Speech': 36, 'Perinatology': 37, 'Neurophysiology': 38, 'Pediatrics-InfectiousDiseases':39, 'Pediatrics-CriticalCare': 40, 'Endocrinology': 41, 'Pediatrics-Pulmonology': 42, 'Neurology': 43, 'Anesthesiology-Pediatric': 44, 'Radiology': 45, 'Pediatrics-Hematology-Oncology': 46, 'Oncology': 47, 'Pediatrics-Neurology': 48, 'Surgery-Plastic': 49, 'Surgery-Thoracic': 50, 'Surgery-PlasticwithinHeadandNeck': 51, 'Ophthalmology': 52, 'Surgery-Pediatric': 53, 'Pediatrics-EmergencyMedicine': 54, 'Anesthesiology': 55, 'AllergyandImmunology': 56, 'Surgery-Maxillofacial': 57, 'Pediatrics-AllergyandImmunology': 58, 'Dentistry': 59, 'Surgeon': 60, 'Psychiatry-Addictive': 61, 'Surgery-Cardiovascular': 62, 'PhysicianNotFound': 63, 'Proctology': 64, 'Obstetrics': 65, 'SurgicalSpecialty': 66, 'Pathology': 67, 'Dermatology': 68, 'OutreachServices': 69, 'Cardiology-Pediatric': 70, 'Endocrinology-Metabolism': 71, 'DCPTEAM': 72, 'Resident': 73}
 
 df = df.replace({"medical_specialty": medical_specialty_mapping})
 df
 
 
-# In[347]:
+# In[16]:
 
 
 # Turning max_glu_serum categorical values into numerical values 
@@ -419,7 +426,7 @@ df['max_glu_serum'] = df['max_glu_serum'].map(max_glu_serum_mapping)
 print(df['max_glu_serum'])
 
 
-# In[348]:
+# In[17]:
 
 
 # Turning A1Cresult categorical values into numerical values 
@@ -439,7 +446,7 @@ df['A1Cresult'] = df['A1Cresult'].map(A1Cresult_mapping)
 print(df['A1Cresult'])
 
 
-# In[349]:
+# In[18]:
 
 
 # Turning metformin categorical values into numerical values 
@@ -453,7 +460,7 @@ df = df.replace({"metformin": metformin_mapping})
 df
 
 
-# In[350]:
+# In[19]:
 
 
 # Turning repaglinide categorical values into numerical values 
@@ -467,7 +474,7 @@ df = df.replace({"repaglinide": repaglinide_mapping})
 df
 
 
-# In[351]:
+# In[20]:
 
 
 # Turning nateglinide categorical values into numerical values 
@@ -481,7 +488,7 @@ df = df.replace({"nateglinide": nateglinide_mapping})
 df
 
 
-# In[352]:
+# In[21]:
 
 
 # Turning chlorpropamide categorical values into numerical values 
@@ -495,7 +502,7 @@ df = df.replace({"chlorpropamide": chlorpropamide_mapping})
 df
 
 
-# In[353]:
+# In[22]:
 
 
 # Turning glimepiride categorical values into numerical values 
@@ -509,7 +516,7 @@ df = df.replace({"glimepiride": glimepiride_mapping})
 df
 
 
-# In[354]:
+# In[23]:
 
 
 # Turning acetohexamide categorical values into numerical values 
@@ -523,7 +530,7 @@ df = df.replace({"acetohexamide": acetohexamide_mapping})
 df
 
 
-# In[355]:
+# In[24]:
 
 
 # Turning glipizide categorical values into numerical values 
@@ -537,7 +544,7 @@ df = df.replace({"glipizide": glipizide_mapping})
 df
 
 
-# In[356]:
+# In[25]:
 
 
 # Turning glyburide categorical values into numerical values 
@@ -551,7 +558,7 @@ df = df.replace({"glyburide": glyburide_mapping})
 df
 
 
-# In[357]:
+# In[26]:
 
 
 # Turning tolbutamide categorical values into numerical values 
@@ -565,7 +572,7 @@ df = df.replace({"tolbutamide": tolbutamide_mapping})
 df
 
 
-# In[358]:
+# In[27]:
 
 
 # Turning pioglitazone categorical values into numerical values 
@@ -579,7 +586,7 @@ df = df.replace({"pioglitazone": pioglitazone_mapping})
 df
 
 
-# In[359]:
+# In[28]:
 
 
 # Turning rosiglitazone categorical values into numerical values 
@@ -593,7 +600,7 @@ df = df.replace({"rosiglitazone": rosiglitazone_mapping})
 df
 
 
-# In[360]:
+# In[29]:
 
 
 # Turning acarbose categorical values into numerical values 
@@ -607,7 +614,7 @@ df = df.replace({"acarbose": acarbose_mapping})
 df
 
 
-# In[361]:
+# In[30]:
 
 
 # Turning miglitol categorical values into numerical values 
@@ -621,7 +628,7 @@ df = df.replace({"miglitol": miglitol_mapping})
 df
 
 
-# In[362]:
+# In[31]:
 
 
 # Turning troglitazone categorical values into numerical values 
@@ -635,7 +642,7 @@ df = df.replace({"troglitazone": troglitazone_mapping})
 df
 
 
-# In[363]:
+# In[32]:
 
 
 # Turning tolazamide categorical values into numerical values 
@@ -649,7 +656,7 @@ df = df.replace({"tolazamide": tolazamide_mapping})
 df
 
 
-# In[364]:
+# In[33]:
 
 
 # Turning examide categorical values into numerical values 
@@ -663,7 +670,7 @@ df = df.replace({"examide": examide_mapping})
 df
 
 
-# In[365]:
+# In[34]:
 
 
 # Turning citoglipton categorical values into numerical values 
@@ -677,7 +684,7 @@ df = df.replace({"citoglipton": citoglipton_mapping})
 df
 
 
-# In[366]:
+# In[35]:
 
 
 # Turning insulin categorical values into numerical values 
@@ -691,7 +698,7 @@ df = df.replace({"insulin": insulin_mapping})
 df
 
 
-# In[367]:
+# In[36]:
 
 
 # Turning glyburide-metformin categorical values into numerical values 
@@ -708,7 +715,7 @@ df['glyburide-metformin'] = df['glyburide-metformin'].map(glyburide_metformin_ma
 print(df[['glyburide-metformin']])
 
 
-# In[368]:
+# In[37]:
 
 
 # Turning glipizide-metformin categorical values into numerical values 
@@ -725,7 +732,7 @@ df['glipizide-metformin'] = df['glipizide-metformin'].map(glipizide_metformin_ma
 print(df[['glipizide-metformin']])
 
 
-# In[369]:
+# In[38]:
 
 
 # Turning glimepiride-pioglitazone categorical values into numerical values 
@@ -742,7 +749,7 @@ df['glimepiride-pioglitazone'] = df['glimepiride-pioglitazone'].map(glimepiride_
 print(df[['glimepiride-pioglitazone']])
 
 
-# In[370]:
+# In[39]:
 
 
 # Turning metformin-rosiglitazone categorical values into numerical values 
@@ -759,7 +766,7 @@ df['metformin-rosiglitazone'] = df['metformin-rosiglitazone'].map(metformin_rosi
 print(df[['metformin-rosiglitazone']])
 
 
-# In[371]:
+# In[40]:
 
 
 # Turning metformin-pioglitazone categorical values into numerical values 
@@ -776,7 +783,7 @@ df['metformin-pioglitazone'] = df['metformin-pioglitazone'].map(metformin_piogli
 print(df[['metformin-pioglitazone']])
 
 
-# In[372]:
+# In[41]:
 
 
 # Turning change categorical values into numerical values 
@@ -790,7 +797,7 @@ df = df.replace({"change": change_mapping})
 df
 
 
-# In[373]:
+# In[42]:
 
 
 # Turning diabetesMed categorical values into numerical values 
@@ -804,7 +811,7 @@ df = df.replace({"diabetesMed": diabetesMed_mapping})
 df
 
 
-# In[374]:
+# In[43]:
 
 
 # Turning readmitted categorical values into numerical values 
@@ -818,7 +825,7 @@ df = df.replace({"readmitted": readmitted_mapping})
 df
 
 
-# In[375]:
+# In[44]:
 
 
 def missing (df):
@@ -830,14 +837,14 @@ def missing (df):
 missing(df)
 
 
-# In[376]:
+# In[45]:
 
 
 # Visualizing the missing data to get more idea
 msno.bar(df)
 
 
-# In[377]:
+# In[46]:
 
 
 msno.matrix(df)
@@ -851,25 +858,25 @@ msno.matrix(df)
 # * Look at the data elements (columns) using `df.head()`
 # * Look at the Dtype (data type) using `df.info()`
 
-# In[378]:
+# In[47]:
 
 
 df.head()
 
 
-# In[379]:
+# In[48]:
 
 
 df.info()
 
 
-# In[380]:
+# In[49]:
 
 
 print(df.columns)
 
 
-# In[381]:
+# In[50]:
 
 
 categorical = ['race', 'gender', 'age', 'weight', 'admission_type_id', 'discharge_disposition_id', 'admission_source_id', 'payer_code', 'medical_specialty', 'diag_1', 'diag_2', 'diag_3', 'max_glu_serum', 'A1Cresult', 'metformin', 'repaglinide', 'nateglinide', 'chlorpropamide', 'glimepiride', 'acetohexamide', 'glipizide', 'glyburide', 'tolbutamide', 'pioglitazone', 'rosigitazone', 'acarbose', 'miglitol', 'troglitazone', 'tolazamide', 'examide', 'citoglipton', 'insulin', 'glyburide-metformin', 'glipizide-metformin', 'glimepiride-pioglitazone', 'metformin-rosiglitazone', 'metformin-pioglitazone', 'change', 'diabetesMed', 'readmitted']
@@ -877,7 +884,7 @@ categorical = ['race', 'gender', 'age', 'weight', 'admission_type_id', 'discharg
 numerical = ['time_in_hospital', 'num_lab_procedures', 'num_procedures', 'num_medications', 'number_outpatient', 'number_emergency', 'number_inpatient', 'number_diagnoses']
 
 
-# In[382]:
+# In[51]:
 
 
 df[numerical].describe()
@@ -895,7 +902,7 @@ df[numerical].describe()
 
 # ## Skewness
 
-# In[383]:
+# In[52]:
 
 
 df[numerical].skew()
@@ -905,7 +912,7 @@ df[numerical].skew()
 
 # ## Univariate Analysis
 
-# In[384]:
+# In[53]:
 
 
 df[numerical].hist(figsize=(20,10));
@@ -958,7 +965,7 @@ df[numerical].hist(figsize=(20,10));
 
 # ## Race
 
-# In[385]:
+# In[54]:
 
 
 print (f'{round(df["race"].value_counts(normalize=True)*100,2)}')
@@ -977,7 +984,7 @@ fig.show()
 
 # ## Gender 
 
-# In[386]:
+# In[55]:
 
 
 print (f'{round(df["gender"].value_counts(normalize=True)*100,2)}')
@@ -992,7 +999,7 @@ fig.show()
 
 # ## Age
 
-# In[387]:
+# In[56]:
 
 
 print (f'{round(df["age"].value_counts(normalize=True)*100,2)}')
@@ -1014,7 +1021,7 @@ fig.show()
 
 # ## Weight
 
-# In[388]:
+# In[57]:
 
 
 print (f'{round(df["weight"].value_counts(normalize=True)*100,2)}')
@@ -1043,7 +1050,7 @@ fig.show()
 
 # ## Admission Type ID
 
-# In[389]:
+# In[58]:
 
 
 print (f'{round(df["admission_type_id"].value_counts(normalize=True)*100,2)}')
@@ -1063,7 +1070,7 @@ fig.show()
 
 # ## Discharge Disposition ID
 
-# In[390]:
+# In[59]:
 
 
 print (f'{round(df["discharge_disposition_id"].value_counts(normalize=True)*100,2)}')
@@ -1102,7 +1109,7 @@ fig.show()
 
 # ## Admission Source ID
 
-# In[391]:
+# In[60]:
 
 
 print (f'{round(df["admission_source_id"].value_counts(normalize=True)*100,2)}')
@@ -1111,9 +1118,27 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 7     56.50%
+# * 1     29.05%
+# * 17     6.66%
+# * 4      3.13%
+# * 6      2.22%
+# * 2      1.08%
+# * 5      0.84%
+# * 3      0.18%
+# * 20     0.16%
+# * 9      0.12%
+# * 8      0.02%
+# * 22     0.01%
+# * 10     0.01%
+# * 14     0.00%
+# * 11     0.00%
+# * 25     0.00%
+# * 13     0.00%
+
 # ## Payer Code 
 
-# In[392]:
+# In[61]:
 
 
 print (f'{round(df["payer_code"].value_counts(normalize=True)*100,2)}')
@@ -1122,20 +1147,41 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 0     39.56%
+# * 1     31.88%
+# * 6      6.17%
+# * 3      4.92%
+# * 7      4.57%
+# * 2      3.47%
+# * 4      2.49%
+# * 5      2.41%
+# * 10     1.90%
+# * 13     1.02%
+# * 11     0.58%
+# * 9      0.54%
+# * 14     0.14%
+# * 12     0.13%
+# * 15     0.09%
+# * 16     0.08%
+# * 8      0.05%
+# * 17     0.00%
+
 # ## Medical Specialty
 
-# In[393]:
+# In[65]:
 
 
 print (f'{round(df["medical_specialty"].value_counts(normalize=True)*100,2)}')
-fig = px.histogram(df, x="medical_specialty", title='Medical Specialty', width=750, height=750)
+fig = px.histogram(df, x="medical_specialty", title='Medical Specialty', width=1500, height=500)
 fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
+
+# Percentages listed below
 
 
 # ## Diag 1
 
-# In[394]:
+# In[66]:
 
 
 print (f'{round(df["diag_1"].value_counts(normalize=True)*100,2)}')
@@ -1143,10 +1189,12 @@ fig = px.histogram(df, x="diag_1", title='diag_1', width=750, height=750)
 fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
+# Percentages listed below
+
 
 # ## Diag 2
 
-# In[395]:
+# In[67]:
 
 
 print (f'{round(df["diag_2"].value_counts(normalize=True)*100,2)}')
@@ -1154,10 +1202,12 @@ fig = px.histogram(df, x="diag_2", title='diag_2', width=750, height=750)
 fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
+# Percentages listed below
+
 
 # ## Diag 3
 
-# In[396]:
+# In[68]:
 
 
 print (f'{round(df["diag_3"].value_counts(normalize=True)*100,2)}')
@@ -1165,10 +1215,12 @@ fig = px.histogram(df, x="diag_3", title='diag_3', width=750, height=750)
 fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
+# Percentages listed below
+
 
 # ## Max_Glu_Serum
 
-# In[397]:
+# In[69]:
 
 
 print (f'{round(df["max_glu_serum"].value_counts(normalize=True)*100,2)}')
@@ -1177,9 +1229,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    94.75%
+# * 4     2.55%
+# * 3     1.46%
+# * 2     1.24%
+
 # ## A1CResult
 
-# In[398]:
+# In[70]:
 
 
 print (f'{round(df["A1Cresult"].value_counts(normalize=True)*100,2)}')
@@ -1188,9 +1245,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    83.28%
+# * 3     8.07%
+# * 4     4.90%
+# * 2     3.75%
+
 # ## Metformin
 
-# In[399]:
+# In[71]:
 
 
 print (f'{round(df["metformin"].value_counts(normalize=True)*100,2)}')
@@ -1199,9 +1261,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    80.36%
+# * 2    18.03%
+# * 3     1.05%
+# * 4     0.57%
+
 # ## Repaglinide
 
-# In[400]:
+# In[72]:
 
 
 print (f'{round(df["repaglinide"].value_counts(normalize=True)*100,2)}')
@@ -1210,9 +1277,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    98.49%
+# * 2     1.36%
+# * 3     0.11%
+# * 4     0.04%
+
 # ## Nateglinide
 
-# In[401]:
+# In[73]:
 
 
 print (f'{round(df["nateglinide"].value_counts(normalize=True)*100,2)}')
@@ -1221,9 +1293,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.31%
+# * 2     0.66%
+# * 3     0.02%
+# * 4     0.01%
+
 # ## Chlorpropamide
 
-# In[402]:
+# In[74]:
 
 
 print (f'{round(df["chlorpropamide"].value_counts(normalize=True)*100,2)}')
@@ -1232,9 +1309,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.92%
+# * 2     0.08%
+# * 3     0.01%
+# * 4     0.00%
+
 # ## Glimepiride
 
-# In[403]:
+# In[75]:
 
 
 print (f'{round(df["glimepiride"].value_counts(normalize=True)*100,2)}')
@@ -1243,9 +1325,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    94.90%
+# * 2     4.59%
+# * 3     0.32%
+# * 4     0.19%
+
 # ## Acetohexamide
 
-# In[404]:
+# In[76]:
 
 
 print (f'{round(df["acetohexamide"].value_counts(normalize=True)*100,2)}')
@@ -1254,9 +1341,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    100.0%
+# * 2      0.0%
+
 # ## Glipizide
 
-# In[405]:
+# In[77]:
 
 
 print (f'{round(df["glipizide"].value_counts(normalize=True)*100,2)}')
@@ -1265,9 +1355,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    87.53%
+# * 2    11.16%
+# * 3     0.76%
+# * 4     0.55%
+
 # ## Glyburide
 
-# In[406]:
+# In[78]:
 
 
 print (f'{round(df["glyburide"].value_counts(normalize=True)*100,2)}')
@@ -1276,9 +1371,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    89.53%
+# * 2     9.11%
+# * 3     0.80%
+# * 4     0.55%
+
 # ## Tolbutamide
 
-# In[407]:
+# In[79]:
 
 
 print (f'{round(df["tolbutamide"].value_counts(normalize=True)*100,2)}')
@@ -1287,9 +1387,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.98%
+# * 2     0.02%
+
 # ## Pioglitazone
 
-# In[408]:
+# In[80]:
 
 
 print (f'{round(df["pioglitazone"].value_counts(normalize=True)*100,2)}')
@@ -1298,9 +1401,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    92.80%
+# * 2     6.85%
+# * 3     0.23%
+# * 4     0.12%
+
 # ## Rosiglitazone
 
-# In[409]:
+# In[81]:
 
 
 print (f'{round(df["rosiglitazone"].value_counts(normalize=True)*100,2)}')
@@ -1309,9 +1417,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    93.75%
+# * 2     5.99%
+# * 3     0.17%
+# * 4     0.09%
+
 # ## Acarbose
 
-# In[ ]:
+# In[82]:
 
 
 print (f'{round(df["acarbose"].value_counts(normalize=True)*100,2)}')
@@ -1320,9 +1433,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.70%
+# * 2     0.29%
+# * 3     0.01%
+# * 4     0.00%
+
 # ## Miglitol
 
-# In[313]:
+# In[83]:
 
 
 print (f'{round(df["miglitol"].value_counts(normalize=True)*100,2)}')
@@ -1331,9 +1449,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.96%
+# * 2     0.03%
+# * 4     0.00%
+# * 3     0.00%
+
 # ## Troglitazone
 
-# In[314]:
+# In[84]:
 
 
 print (f'{round(df["troglitazone"].value_counts(normalize=True)*100,2)}')
@@ -1342,9 +1465,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    100.0%
+# * 2      0.0%
+
 # ## Tolazamide
 
-# In[315]:
+# In[85]:
 
 
 print (f'{round(df["tolazamide"].value_counts(normalize=True)*100,2)}')
@@ -1353,9 +1479,13 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.96%
+# * 2     0.04%
+# * 3     0.00%
+
 # ## Examide
 
-# In[318]:
+# In[86]:
 
 
 print (f'{round(df["examide"].value_counts(normalize=True)*100,2)}')
@@ -1364,9 +1494,11 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    100.0%
+
 # ## Citoglipton
 
-# In[320]:
+# In[87]:
 
 
 print (f'{round(df["citoglipton"].value_counts(normalize=True)*100,2)}')
@@ -1375,9 +1507,11 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1 100.0%
+
 # ## Insulin
 
-# In[322]:
+# In[88]:
 
 
 print (f'{round(df["insulin"].value_counts(normalize=True)*100,2)}')
@@ -1386,9 +1520,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    46.56%
+# * 2    30.31%
+# * 4    12.01%
+# * 3    11.12%
+
 # ## Glyburide-metformin
 
-# In[323]:
+# In[89]:
 
 
 print (f'{round(df["glyburide-metformin"].value_counts(normalize=True)*100,2)}')
@@ -1397,9 +1536,14 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.31%
+# * 2     0.68%
+# * 3     0.01%
+# * 4     0.01%
+
 # ## Glipizide-metformin
 
-# In[324]:
+# In[90]:
 
 
 print (f'{round(df["glipizide-metformin"].value_counts(normalize=True)*100,2)}')
@@ -1408,9 +1552,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    99.99%
+# * 2     0.01%
+
 # ## Glimepiride-pioglitazone
 
-# In[325]:
+# In[91]:
 
 
 print (f'{round(df["glimepiride-pioglitazone"].value_counts(normalize=True)*100,2)}')
@@ -1419,9 +1566,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    100.0%
+# * 2      0.0%
+
 # ## Metformin-rosiglitazone
 
-# In[326]:
+# In[92]:
 
 
 print (f'{round(df["metformin-rosiglitazone"].value_counts(normalize=True)*100,2)}')
@@ -1430,9 +1580,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    100.0%
+# * 2      0.0%
+
 # ## Metformin-pioglitazone
 
-# In[327]:
+# In[93]:
 
 
 print (f'{round(df["metformin-pioglitazone"].value_counts(normalize=True)*100,2)}')
@@ -1441,9 +1594,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    100.0%
+# * 2      0.0%
+
 # ## Change
 
-# In[329]:
+# In[94]:
 
 
 print (f'{round(df["change"].value_counts(normalize=True)*100,2)}')
@@ -1452,9 +1608,12 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 1    53.8%
+# * 2    46.2%
+
 # ## DiabetesMed
 
-# In[330]:
+# In[95]:
 
 
 print (f'{round(df["diabetesMed"].value_counts(normalize=True)*100,2)}')
@@ -1463,12 +1622,173 @@ fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
 
 
+# * 3    77.0%
+# * 1    23.0%
+
 # ## Readmitted
 
-# In[331]:
+# In[96]:
 
 
 print (f'{round(df["readmitted"].value_counts(normalize=True)*100,2)}')
 fig = px.histogram(df, x="readmitted", title='readmitted', width=500, height=750)
 fig.update_layout(xaxis={'categoryorder':'total descending'})
 fig.show()
+
+
+# * 1    53.91%
+# * 2    34.93%
+# * 3    11.16%
+
+# ## Bivariate Analysis
+
+# ### Race & Readmittance 
+
+# In[97]:
+
+
+# Drop rows with missing values in the 'race' column
+df_cleaned = df.dropna(subset=['race'])
+
+# Define the mapping for readmitted categories
+readmitted_mapping = {'NO': 1, '>30': 2, '<30': 3}
+
+# Replace categorical values with numerical values
+df_cleaned['readmitted'] = df_cleaned['readmitted'].replace(readmitted_mapping)
+
+# Get unique races
+races = df_cleaned['race'].unique()
+
+for race in races:
+    # Filter out rows with the specific race
+    race_data = df_cleaned[df_cleaned['race'] == race]
+    
+    # Calculate the probability of readmittance for the specific race
+    probability = race_data['readmitted'].mean() * 10
+    
+    print(f'A person of race "{race}" has a probability of {round(probability, 2)} % for readmittance')
+
+
+# In[98]:
+
+
+# Get unique races
+races = df_cleaned['race'].unique()
+
+# Create a histogram
+fig = px.histogram(df_cleaned, x="race", color="readmitted", width=600, height=400)
+
+# Show the histogram
+fig.show()
+
+
+# ### Gender & Readmittance 
+
+# In[99]:
+
+
+# Get unique races
+genders = df_cleaned['gender'].unique()
+
+for gender in genders:
+    # Filter out rows with the specific gender
+    gender_data = df_cleaned[df_cleaned['gender'] == gender]
+    
+    # Calculate the probability of readmittance for the specific gender
+    probability = gender_data['readmitted'].mean() * 10 
+    
+    print(f'A person of gender "{gender}" has a probability of {round(probability, 2)} % for readmittance')
+
+
+# In[100]:
+
+
+# Get unique genders
+genders = df_cleaned['gender'].unique()
+
+# Create a histogram
+fig = px.histogram(df_cleaned, x="gender", color="readmitted", width=600, height=400)
+
+# Show the histogram
+fig.show()
+
+
+# ### Age & Readmittance
+
+# In[101]:
+
+
+# Get unique ages
+ages = df_cleaned['age'].unique()
+
+for age in ages:
+    # Filter out rows with the specific age
+    age_data = df_cleaned[df_cleaned['age'] == age]
+    
+    # Calculate the probability of readmittance for the specific age
+    probability = age_data['readmitted'].mean() * 10 
+    
+    print(f'A person of age "{age}" has a probability of {round(probability, 2)} % for readmittance')
+
+
+# In[102]:
+
+
+# Get unique ages
+ages = df_cleaned['age'].unique()
+
+# Create a histogram
+fig = px.histogram(df_cleaned, x="age", color="readmitted", width=600, height=400)
+
+# Show the histogram
+fig.show()
+
+
+# ### Payer Code & Readmittance
+
+# In[103]:
+
+
+# Get unique payer_codes
+payer_codes = df_cleaned['payer_code'].unique()
+
+for payer_code in payer_codes:
+    # Filter out rows with the specific payer codes
+    payer_code_data = df_cleaned[df_cleaned['payer_code'] == payer_code]
+    
+    # Calculate the probability of readmittance for the payer_code
+    probability = payer_code_data['readmitted'].mean() * 10 
+    
+    print(f'A person of payer_code "{payer_code}" has a probability of {round(probability, 2)} % for readmittance')
+
+
+# In[104]:
+
+
+# Get payer codes
+payer_codes = df_cleaned['payer_code'].unique()
+
+# Create a histogram
+fig = px.histogram(df_cleaned, x="payer_code", color="readmitted", width=600, height=400)
+
+# Show the histogram
+fig.show()
+
+
+# ### Medical Specialty and Readmittance
+
+# In[105]:
+
+
+# Get unique medical specialties
+medical_specialties = df_cleaned['medical_specialty'].unique()
+
+for medical_specialty in medical_specialties:
+    # Filter out rows with the specific medical_specialties
+    medical_specialty_data = df_cleaned[df_cleaned['medical_specialty'] == medical_specialty]
+    
+    # Calculate the probability of readmittance for the medical_specialty
+    probability = medical_specialty_data['readmitted'].mean() * 10 
+    
+    print(f'A person of medical_specialty "{medical_specialty}" has a probability of {round(probability, 2)} % for readmittance')
+
